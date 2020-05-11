@@ -11,17 +11,16 @@ app.use(express.static('dist'));
 app.use(index);
 
 const server = http.createServer(app);
-
 const io = socketIO(server);
 
 // require('./io/io.js')(server);
 
 io.on('connection', socket => {
-  console.log('new websocket')
-
-  socket.emit('message', 'welcome')
+  console.log('connected');
+  // socket.emit('message', 'welcome')
 
   socket.on('sendMessage', message => {
+    console.log('Ryan: ' + message);
     io.emit('message', message)
   })
 });

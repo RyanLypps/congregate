@@ -1,34 +1,34 @@
 import React, { Component } from 'react'
-import socketIOClient from "socket.io-client";
+import io from "socket.io-client";
 
  class MainPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       message: '',
-      endPoint: "http://localhost:3000"
     }
     this.updateState = this.updateState.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this);
+    
+    this.socket = io.connect(`http://localhost:3000`, { transports: ['websocket'] });
   }
+
   updateState(e) {
     this.setState({
       message: e.target.value
     })
   };
+
   handleSubmit(event) {
-    const { endPoint } = this.state;
-    const socket = socketIOClient(endPoint)
-    const {message} = this.state
+    const {message} = this.state;
     event.preventDefault();
-    socket.emit('sendMessage', message)
+    this.socket.emit('sendMessage', message)
   }
 
   componentDidMount() {
-    const { endPoint } = this.state;
-    const socket = socketIOClient(endPoint)
-    socket.on('message', (message) => {
-      console.log(message)
+    this.socket.on('message', (data) => {
+      const msg = data;
+      console.log('Ryan: ' + msg);
     }) 
   }
   render() {
