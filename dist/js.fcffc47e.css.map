@@ -1,0 +1,1 @@
+{"version":3,"sources":["../css/style.scss"],"names":[],"mappings":"AAAA;EACI;EACA;EACA","file":"js.fcffc47e.css","sourceRoot":"../client/src/html","sourcesContent":[".header {\n    color: lightcoral;\n    letter-spacing: 0.5em;\n    text-transform: uppercase;\n  }"]}
