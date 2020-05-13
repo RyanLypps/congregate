@@ -1,12 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import MainPage from './MainPage/MainPage';
+import Messenger from './Messenger/Messenger';
+import JoinPage from './JoinPage/JoinPage';
 
-function App(props) {
+function App() {
   return (
-    <Router basename="/">
-      <Route exact path='/' component={ MainPage } />
-      {/* <Route path='/admin/student-summary/:id' component={ StudentStats } /> */}
+    <Router>
+      <Route exact path='/' component={ JoinPage } />
+      <Route exact path='/messenger' component={ Messenger } />
     </Router>
   );
 }

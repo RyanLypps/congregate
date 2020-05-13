@@ -1,7 +1,9 @@
 import { combineReducers } from 'redux';
-import appReducer from './components/MainPage/mainReducer';
+import messengerReducer from './components/Messenger/messengerReducer';
+import joinPageReducer from './components/JoinPage/joinReducer';
 
 const rootReducer = combineReducers({
-    app: appReducer,
+    messenger: messengerReducer,
+    joinPage: joinPageReducer,
 });
 export default rootReducer;
