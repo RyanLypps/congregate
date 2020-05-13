@@ -36,7 +36,7 @@ import {
         <input type='text' value={this.props.username} onChange={this.name} placeholder='display-name'/>
         <h2>Create Chatroom</h2>
         <input type='text' value={this.props.room} onChange={this.room} placeholder='chat-room'/>
-        <Link to={'/messenger'}><button onClick={this.joinChatRoom}>Join</button></Link>
+        <Link to={'/messenger'}><button onClick={this.joinChatRoom}>Join!</button></Link>
       </div>
     )
   }
