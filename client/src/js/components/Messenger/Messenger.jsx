@@ -12,7 +12,7 @@ import {
     this.updateMessage = this.updateMessage.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this);
     
-    this.socket = io.connect(`http://localhost:3000`, { transports: ['websocket'] });
+    // this.socket = io.connect(`http://localhost:3000`, { transports: ['websocket'] });
   }
 
   updateMessage(e) {
@@ -28,12 +28,13 @@ import {
     this.socket.emit('sendMessage', message)
   }
 
-  componentDidMount() {
-    this.socket.on('message', (data) => {
-      const msg = data;
-      console.log('Ryan: ' + msg);
-    }) 
-  }
+  // componentDidMount() {
+  //   this.socket.on('message', (data) => {
+  //     const msg = data;
+  //     console.log('Ryan: ' + msg);
+  //   }) 
+  // }
+
   render() {
     return (
       <div>

@@ -12,3 +12,9 @@ export function getChatRoom(chatRoom) {
     payload: chatRoom
   }
 }
+export function sendMessage(message) {
+  return {
+    type: 'SEND_MESSAGE',
+    payload: message
+  }
+}
