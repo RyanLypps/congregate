@@ -1,6 +1,7 @@
 const defaultState = {
   username: [],
   chatRoom: [],
+  message: '',
 };
 
 export default function joinReducer(state = defaultState, action) {
@@ -18,6 +19,13 @@ export default function joinReducer(state = defaultState, action) {
         return {
             ...state,
             chatRoom: payload
+        }
+    }
+
+      case "SEND_MESSAGE": {
+        return {
+            ...state,
+            message: payload
         }
     }
 
