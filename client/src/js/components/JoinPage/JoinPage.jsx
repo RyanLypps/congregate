@@ -33,22 +33,7 @@ class JoinPage extends Component {
     }
 
     this.socket.emit('newUser', chatRoomInfo);
-
-    // this.socket.emit('chatRoomInfo', chatRoomInfo);
-
-    // this.socket.on('chatRoomInfo', chatRoomInfo => {
-    //   if(chatRoomInfo.chatRoom){
-    //     console.log('CHATROOM : ');
-    //     console.log(chatRoomInfo.chatRoom);
-    //   } else  {
-    //     console.log(`${chatRoomInfo.username}: ${chatRoomInfo.message.message}`);
-    //   }
-    // });
-
-    // this.socket.emit('Ghosts', chatRoomInfo);
-    // this.socket.on('Ghosts', data => {
-    //   console.log(data);
-    // })
+    this.socket.emit('joinChatRoom', chatRoomInfo);
 
   }
 
@@ -60,14 +45,6 @@ class JoinPage extends Component {
     this.socket.emit('sendMessage', sendMessage);
     sendMessage = {};
 
-
-
-    // this.socket.emit('sendMessage', sendMessage);
-
-    // this.socket.on('chatRoomInfo', ({message, username}) => {
-    //   console.log('MESSAGE FROM SERVER FROM PERSON: ');
-    //   console.log(`${username}: ${message.message}`);
-    // });
   }
   componentDidMount() {
 
@@ -80,6 +57,9 @@ class JoinPage extends Component {
       this.state.usersArr.push(user);
     });
 
+    this.socket.on('sendMessage', data => {
+      console.log(data);
+    });
   }
 
   name(e) {
