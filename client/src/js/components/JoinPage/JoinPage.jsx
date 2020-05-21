@@ -29,7 +29,7 @@ class JoinPage extends Component {
   joinChatRoom(username, chatRoom) {
     let chatRoomInfo = {
       username: username,
-      chatRoom: chatRoom 
+      chatRoom: chatRoom
     }
 
     this.socket.emit('newUser', chatRoomInfo);
@@ -53,10 +53,6 @@ class JoinPage extends Component {
       this.state.messageArr.push(data.msg.message);
     });
 
-    this.socket.on('getUsers', user => {
-      this.state.usersArr.push(user);
-    });
-
     this.socket.on('welcomeToRoom', data => {
       console.log(data);
     });
@@ -65,8 +61,18 @@ class JoinPage extends Component {
       console.log(data);
     });
 
-    // this.socket.on('onlineUsers', data => {
-    //   this.state.usersArr.push(data.onlineUser)});
+    this.socket.on('leftChat', data => {
+      console.log(data);
+    });
+
+    this.socket.on('onlineUsers', ({ users }) => {
+
+      this.setState({
+        usersArr: users.map(user => user.username)
+      });
+    });
+
+
   }
 
   name(e) {
@@ -97,16 +103,16 @@ class JoinPage extends Component {
         <input type='text' value={this.props.message} onChange={this.message}></input>
         <div>Online Users</div>
         {this.state.usersArr ? this.state.usersArr.map(user => {
-            return (
-              <div>
-              <h3>
-                {user}
-              </h3>
+          return (
+            <div>
+                <h3>
+                  {user}
+                </h3>
             </div>
           );
         }) : <div></div>}
         <button onClick={() => this.sendMessage(this.props.message)}>Send Message</button>
-    <div></div>
+        <div></div>
         {this.state.messageArr ? this.state.messageArr.map(message => {
           return (
             <div>

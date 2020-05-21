@@ -19,7 +19,7 @@ let chatRooms = [];
 let usersInChatRoom = [];
 
 io.sockets.on('connection', socket => {
-  connections.push(socket.id);
+  connections.push(socket);
   console.log('Connected: %s sockets connected ' + connections.length);
 
    // Disconnect
@@ -30,6 +30,16 @@ io.sockets.on('connection', socket => {
     console.log('Disconnected: %s users connected ' + users.length);
     connections.splice(connections.indexOf(socket), 1);
     console.log('Disconnected: %s sockets connected ' + connections.length);
+    usersInChatRoom.splice(usersInChatRoom.indexOf(socket.id), 1);
+
+    // User leaves chat
+    io.to(socket.room).emit('leftChat', `${socket.username} has left the chat.`);
+
+      // Sends right users in Right in rooms
+      io.to(socket.room).emit('onlineUsers', {
+        users: getUsersInRightChatRooms(socket.room),
+      });
+    console.log(`Disconnected: %s users connected to chatrooms: ` + usersInChatRoom.length);
   });
   
   // Send Message
@@ -39,38 +49,41 @@ io.sockets.on('connection', socket => {
 
   // New User
   socket.on('newUser', chatRoomInfo => {
+
+    getUsersInRoom(chatRoomInfo.chatRoom, chatRoomInfo.username, socket.id);
+
     socket.username = chatRoomInfo.username;
     users.push(socket.username);
     console.log('Connected: %s users connected ' + users.length);
-    updateUsernames();
   });
 
   // Join ChatRoom
   socket.on('joinChatRoom', chatRoomName => {
     socket.room = chatRoomName.chatRoom;
     chatRooms.push(socket.room);
-    console.log(`Connected to room ${chatRoomName.chatRoom} chatRooms: ${chatRooms.length}`);
+    console.log(`Connected to room ${chatRoomName.chatRoom}`);
     socket.join(`${chatRoomName.chatRoom}`);
 
-    // Getting socket IDS from that ChatRoom
-    // io.of('/').in(`${chatRoomName.chatRoom}`).clients((error, clients) => {
-    //   if (error) throw error;
-    //   for(let i = 0; i < clients.length; i++) {
-    //     if(socket.id == clients[i]) {  
-    //       usersInChatRoom.push(socket.username);
-    //         // io.sockets.emit('getUsers', clients);
-    //       }
-    //     }
-    // });
-
+    // Sends right users in Right in rooms
+    io.to(chatRoomName.chatRoom).emit('onlineUsers', {
+      users: getUsersInRightChatRooms(chatRoomName.chatRoom),
+    });
+    // Welcomes User to Room
     io.to(socket.id).emit('welcomeToRoom', `Welcome to room ${chatRoomName.chatRoom}`);
+
+    // Tells other users that new user has joined
     socket.to(`${chatRoomName.chatRoom}`).emit('hasJoinedRoom', `${socket.username} has joined ${chatRoomName.chatRoom}`);
   });
 
-  // Gets Users that are Online
-  let updateUsernames = () => {
-    io.sockets.emit('getUsers', users);
-  }
+  let getUsersInRoom = (chatRoomName, username, id) => {
+    let userInRoom = {chatRoomName, username, id};
+      usersInChatRoom.push(userInRoom);
+  };
+
+  let getUsersInRightChatRooms = (chatRoomName) => {
+    return usersInChatRoom.filter(user => user.chatRoomName == chatRoomName); 
+  };
+
 });
 
 const PORT = process.env.PORT || 3000
@@ -80,3 +93,14 @@ server.listen(PORT, () => {
 });
 
 // module.exports = app;
+
+  // Getting socket IDS from that ChatRoom
+    // io.of('/').in(`${chatRoomName.chatRoom}`).clients((error, clients) => {
+    //   if (error) throw error;
+    //   for(let i = 0; i < clients.length; i++) {
+    //     if(socket.id == clients[i]) {  
+    //       usersInChatRoom.push(socket.username);
+    //         // io.sockets.emit('getUsers', clients);
+    //       }
+    //     }
+    // });
