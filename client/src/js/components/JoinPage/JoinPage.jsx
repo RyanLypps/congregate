@@ -57,9 +57,16 @@ class JoinPage extends Component {
       this.state.usersArr.push(user);
     });
 
-    this.socket.on('sendMessage', data => {
+    this.socket.on('welcomeToRoom', data => {
       console.log(data);
     });
+
+    this.socket.on('hasJoinedRoom', data => {
+      console.log(data);
+    });
+
+    // this.socket.on('onlineUsers', data => {
+    //   this.state.usersArr.push(data.onlineUser)});
   }
 
   name(e) {
