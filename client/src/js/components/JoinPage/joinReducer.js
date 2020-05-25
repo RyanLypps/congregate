@@ -1,6 +1,6 @@
 const defaultState = {
-  username: [],
-  chatRoom: [],
+  username: '',
+  chatRoom: '',
   message: '',
 };
 
@@ -26,6 +26,15 @@ export default function joinReducer(state = defaultState, action) {
         return {
             ...state,
             message: payload
+        }
+    }
+
+      case "CLEAR_FIELD": {
+        return {
+            ...state,
+            message: '',
+            chatRoom: '',
+            username: '',
         }
     }
 

@@ -18,3 +18,8 @@ export function sendMessage(message) {
     payload: message
   }
 }
+export function clearField() {
+  return {
+    type: 'CLEAR_FIELD',
+  }
+}
