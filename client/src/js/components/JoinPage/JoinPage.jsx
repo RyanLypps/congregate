@@ -37,7 +37,7 @@ class JoinPage extends Component {
     }
 
     this.socket.emit('newUser', chatRoomInfo);
-    this.socket.emit('joinChatRoom', chatRoomInfo);
+    // this.socket.emit('joinChatRoom', chatRoomInfo);
 
     dispatch(clearField());
 
