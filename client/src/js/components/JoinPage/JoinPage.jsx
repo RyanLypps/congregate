@@ -50,7 +50,10 @@ class JoinPage extends Component {
 
     this.socket.on('message', data => {
       console.log(data.user + ': ' + data.msg.message);
-      this.state.messageArr.push(data.msg.message);
+      this.setState({
+        messageArr: data.msg.message
+      });
+
     });
 
     this.socket.on('welcomeToRoom', data => {
