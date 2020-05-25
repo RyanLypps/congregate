@@ -15,94 +15,76 @@ const io = socketIO(server);
 
 let users = [];
 let connections = [];
+let chatRooms = [];
+let usersInChatRoom = [];
 
 io.sockets.on('connection', socket => {
   connections.push(socket);
   console.log('Connected: %s sockets connected ' + connections.length);
-  socket.join('BIGBOYS');
-  io.to('BIGBOYS').emit('sendMessage', console.log('HELLO IM HERE'));
-  console.log(socket)
-  
+
    // Disconnect
    socket.on('disconnect', data => {
+    chatRooms.splice(chatRooms.indexOf(socket.room), 1);
+    console.log('Disconnected: %s chatRooms connected ' + chatRooms.length);
     users.splice(users.indexOf(socket.username), 1);
     console.log('Disconnected: %s users connected ' + users.length);
     connections.splice(connections.indexOf(socket), 1);
     console.log('Disconnected: %s sockets connected ' + connections.length);
+    usersInChatRoom.splice(usersInChatRoom.indexOf(socket.id), 1);
+
+    // User leaves chat
+    io.to(socket.room).emit('leftChat', `${socket.username} has left the chat.`);
+
+      // Sends right users in Right in rooms
+      io.to(socket.room).emit('onlineUsers', {
+        users: getUsersInRightChatRooms(socket.room),
+      });
+    console.log(`Disconnected: %s users connected to chatrooms: ` + usersInChatRoom.length);
   });
   
   // Send Message
   socket.on('sendMessage', message => {
-    console.log(message);
-    console.log('HELLO IM TRIGGERED');
-    io.sockets.emit('message', { msg: message, user: socket.username });
+    io.to(`${socket.room}`).emit('message', { msg: message, user: socket.username });
   });
 
   // New User
   socket.on('newUser', chatRoomInfo => {
+
+    getUsersInRoom(chatRoomInfo.chatRoom, chatRoomInfo.username, socket.id);
+
     socket.username = chatRoomInfo.username;
     users.push(socket.username);
     console.log('Connected: %s users connected ' + users.length);
-    updateUsernames();
   });
 
+  // Join ChatRoom
+  socket.on('joinChatRoom', chatRoomName => {
+    socket.room = chatRoomName.chatRoom;
+    chatRooms.push(socket.room);
+    console.log(`Connected to room ${chatRoomName.chatRoom}`);
+    socket.join(`${chatRoomName.chatRoom}`);
 
-  // Gets Users that are Online
-  let updateUsernames = () => {
-    io.sockets.emit('getUsers', users);
-  }
+    // Sends right users in Right in rooms
+    io.to(chatRoomName.chatRoom).emit('onlineUsers', {
+      users: getUsersInRightChatRooms(chatRoomName.chatRoom),
+    });
+    // Welcomes User to Room
+    io.to(socket.id).emit('welcomeToRoom', `Welcome to room ${chatRoomName.chatRoom}`);
 
-//whatever code
+    // Tells other users that new user has joined
+    socket.to(`${chatRoomName.chatRoom}`).emit('hasJoinedRoom', `${socket.username} has joined ${chatRoomName.chatRoom}`);
+  });
 
-  // io.in('Ghosts').emit('sendMessage', 'the game will start soon');
-  //   socket.join('Ghosters');
-  //   io.sockets.in('Ghosters').emit('ok',  'ooooookkk');
-  // socket.on('ok', data => {
-  //     console.log('WORKING')
-  // })
+  let getUsersInRoom = (chatRoomName, username, id) => {
+    let userInRoom = {chatRoomName, username, id};
+      usersInChatRoom.push(userInRoom);
+  };
 
-  // console.log(socket);
-
-  // good code below
-
-  // socket.on('chatRoomInfo', chatRoomInfo => {
-  //   console.log('ChatRoomInfo: '), console.log(chatRoomInfo);
-  //   users[socket.id] = chatRoomInfo.username;
-  //   io.sockets.emit('chatRoomInfo', chatRoomInfo);
-  // });
-
-  // socket.on('sendMessage', message => {
-
-  //   console.log(users[socket.id] + 'MESSAGE: '), console.log(message);
-  //   let username = users[socket.id];
-  //   io.sockets.emit('chatRoomInfo', { message, username });
-  // });
- 
-
+  let getUsersInRightChatRooms = (chatRoomName) => {
+    return usersInChatRoom.filter(user => user.chatRoomName == chatRoomName); 
+  };
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-// io.on('connection', socket => {
-//   console.log('connected');
-//   // socket.emit('message', 'welcome')
-
-//   socket.on('sendMessage', message => {
-//     console.log('Ryan: ' + message);
-//     io.emit('message', message)
-//   })
-// });
 
 const PORT = process.env.PORT || 3000
 
@@ -111,3 +93,14 @@ server.listen(PORT, () => {
 });
 
 // module.exports = app;
+
+  // Getting socket IDS from that ChatRoom
+    // io.of('/').in(`${chatRoomName.chatRoom}`).clients((error, clients) => {
+    //   if (error) throw error;
+    //   for(let i = 0; i < clients.length; i++) {
+    //     if(socket.id == clients[i]) {  
+    //       usersInChatRoom.push(socket.username);
+    //         // io.sockets.emit('getUsers', clients);
+    //       }
+    //     }
+    // });

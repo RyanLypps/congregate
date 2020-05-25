@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import {reset} from 'redux-form';
 import io from "socket.io-client";
 import {
   getUserName,
   getChatRoom,
-  sendMessage
+  sendMessage,
+  clearField
 } from './joinActions';
 
+let tempMsgArr = [];
 class JoinPage extends Component {
   constructor(props) {
     super(props);
@@ -27,58 +30,64 @@ class JoinPage extends Component {
   }
 
   joinChatRoom(username, chatRoom) {
+    const { dispatch } = this.props;
     let chatRoomInfo = {
       username: username,
-      chatRoom: chatRoom 
+      chatRoom: chatRoom
     }
 
     this.socket.emit('newUser', chatRoomInfo);
+    this.socket.emit('joinChatRoom', chatRoomInfo);
 
-    // this.socket.emit('chatRoomInfo', chatRoomInfo);
-
-    // this.socket.on('chatRoomInfo', chatRoomInfo => {
-    //   if(chatRoomInfo.chatRoom){
-    //     console.log('CHATROOM : ');
-    //     console.log(chatRoomInfo.chatRoom);
-    //   } else  {
-    //     console.log(`${chatRoomInfo.username}: ${chatRoomInfo.message.message}`);
-    //   }
-    // });
-
-    // this.socket.emit('Ghosts', chatRoomInfo);
-    // this.socket.on('Ghosts', data => {
-    //   console.log(data);
-    // })
+    dispatch(clearField());
 
   }
 
   sendMessage(message) {
+    const { dispatch } = this.props;
     let sendMessage = {
       message: message
     }
 
     this.socket.emit('sendMessage', sendMessage);
     sendMessage = {};
-
-
-
-    // this.socket.emit('sendMessage', sendMessage);
-
-    // this.socket.on('chatRoomInfo', ({message, username}) => {
-    //   console.log('MESSAGE FROM SERVER FROM PERSON: ');
-    //   console.log(`${username}: ${message.message}`);
-    // });
+    
+    dispatch(clearField());
   }
+  
   componentDidMount() {
 
     this.socket.on('message', data => {
       console.log(data.user + ': ' + data.msg.message);
-      this.state.messageArr.push(data.msg.message);
+
+
+      tempMsgArr.push(data.msg.message);
+
+      this.setState({
+        messageArr: tempMsgArr
+      });
+
     });
 
-    this.socket.on('getUsers', user => {
-      this.state.usersArr.push(user);
+    this.socket.on('welcomeToRoom', data => {
+      console.log(data);
     });
+
+    this.socket.on('hasJoinedRoom', data => {
+      console.log(data);
+    });
+
+    this.socket.on('leftChat', data => {
+      console.log(data);
+    });
+
+    this.socket.on('onlineUsers', ({ users }) => {
+
+      this.setState({
+        usersArr: users.map(user => user.username)
+      });
+    });
+
 
   }
 
@@ -104,25 +113,25 @@ class JoinPage extends Component {
         <h2>Create Username</h2>
         <input type='text' value={this.props.username} onChange={this.name} placeholder='display-name' />
         <h2>Create Chatroom</h2>
-        <input type='text' value={this.props.room} onChange={this.room} placeholder='chat-room' />
+        <input type='text' value={this.props.chatRoom} onChange={this.room} placeholder='chat-room' />
         <button onClick={() => this.joinChatRoom(this.props.username, this.props.chatRoom)}>Join</button>
         <hr></hr>
-        <input type='text' value={this.props.message} onChange={this.message}></input>
+        <input name='message-field' type='text' value={this.props.message} onChange={this.message}></input>
         <div>Online Users</div>
-        {this.state.usersArr ? this.state.usersArr.map(user => {
-            return (
-              <div>
-              <h3>
-                {user}
-              </h3>
+        {this.state.usersArr ? this.state.usersArr.map((user, i) => {
+          return (
+            <div key={i}>
+                <h3>
+                  {user}
+                </h3>
             </div>
           );
         }) : <div></div>}
         <button onClick={() => this.sendMessage(this.props.message)}>Send Message</button>
-    <div></div>
-        {this.state.messageArr ? this.state.messageArr.map(message => {
+        <div></div>
+        {this.state.messageArr ? this.state.messageArr.map((message, i) => {
           return (
-            <div>
+            <div key={i}>
               <h3>
                 {message}
               </h3>
