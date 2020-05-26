@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import {reset} from 'redux-form';
+import { reset } from 'redux-form';
 import io from "socket.io-client";
 import {
   getUserName,
@@ -51,10 +51,13 @@ class JoinPage extends Component {
 
     this.socket.emit('sendMessage', sendMessage);
     sendMessage = {};
-    
+
     dispatch(clearField());
+
+    this.focusMessageInput.focus();
+
   }
-  
+
   componentDidMount() {
 
     this.socket.on('message', data => {
@@ -111,23 +114,25 @@ class JoinPage extends Component {
     return (
       <div>
         <h2>Create Username</h2>
-        <input type='text' value={this.props.username} onChange={this.name} placeholder='display-name' />
+        <input type='text' value={this.props.username} onChange={this.name} placeholder='display-name' autoFocus />
         <h2>Create Chatroom</h2>
         <input type='text' value={this.props.chatRoom} onChange={this.room} placeholder='chat-room' />
         <button onClick={() => this.joinChatRoom(this.props.username, this.props.chatRoom)}>Join</button>
         <hr></hr>
-        <input name='message-field' type='text' value={this.props.message} onChange={this.message}></input>
         <div>Online Users</div>
         {this.state.usersArr ? this.state.usersArr.map((user, i) => {
           return (
             <div key={i}>
-                <h3>
-                  {user}
-                </h3>
+              <h3>
+                {user}
+              </h3>
             </div>
           );
         }) : <div></div>}
-        <button onClick={() => this.sendMessage(this.props.message)}>Send Message</button>
+        <form onSubmit={(e) => {e.preventDefault(); this.sendMessage(this.props.message)}}>
+          <input ref={(input) => { this.focusMessageInput = input; }} className='message-input' name='message-field' type='text' value={this.props.message} onChange={this.message} maxLength='500'></input>
+          <button onClick={() => this.sendMessage(this.props.message)}>Chat</button>
+        </form>
         <div></div>
         {this.state.messageArr ? this.state.messageArr.map((message, i) => {
           return (
