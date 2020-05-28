@@ -27,11 +27,18 @@ io.sockets.on('connection', socket => {
   socket.on('disconnect', data => {
     chatRooms.splice(chatRooms.indexOf(socket.room), 1);
     console.log('Disconnected: %s chatRooms connected ' + chatRooms.length);
+
     users.splice(users.indexOf(socket.username), 1);
     console.log('Disconnected: %s users connected ' + users.length);
-    connections.splice(connections.indexOf(socket), 1);
+
+    connections.splice(connections.indexOf(socket.id), 1);
     console.log('Disconnected: %s sockets connected ' + connections.length);
-    usersInChatRoom.splice(usersInChatRoom.indexOf(socket.id), 1);
+
+    for (let i = 0; i < usersInChatRoom.length; i++) {
+      if (usersInChatRoom[i].id == socket.id) {
+        usersInChatRoom.splice(i, 1);
+      }
+    }
 
     // User leaves chat
     io.to(socket.room).emit('leftChat', `${socket.username} has left the chat.`);
@@ -50,7 +57,7 @@ io.sockets.on('connection', socket => {
 
   // New User
   socket.on('newUser', chatRoomInfo => {
-  
+
     if (usersInChatRoom.filter(users => users.id == socket.id).length == 0) {
 
       getUsersInRoom(chatRoomInfo.chatRoom, chatRoomInfo.username, socket.id);
@@ -61,7 +68,7 @@ io.sockets.on('connection', socket => {
 
       socket.room = chatRoomInfo.chatRoom;
       chatRooms.push(socket.room);
-      console.log(`Connected to room ${chatRoomInfo.chatRoom}`);
+      console.log(`Connected to room ${chatRoomInfo.chatRoom}.` + ' ' + 'Amt of People in chatrooms: ' + chatRooms.length);
       socket.join(`${chatRoomInfo.chatRoom}`);
 
       // Sends right users in Right in rooms
@@ -76,27 +83,36 @@ io.sockets.on('connection', socket => {
     }
   });
 
-  // Join ChatRoom
-  // socket.on('joinChatRoom', chatRoomName => {
-  //   // console.log(usersInChatRoom.filter(users => users.id == socket.id));
-  //   // if (usersInChatRoom.filter(users => users.inRoom == false).length >= 1 ) {
+  // Leave chatroom
+  socket.on('leaveChatRoom', data => {
+    if (usersInChatRoom.filter(user => user.id == socket.id).length == 1) {
+      let rightUser = usersInChatRoom.filter(user => user.id == socket.id);
+      socket.leave(`${rightUser[0].chatRoomName}`);
 
-  //     socket.room = chatRoomName.chatRoom;
-  //     chatRooms.push(socket.room);
-  //     console.log(`Connected to room ${chatRoomName.chatRoom}`);
-  //     socket.join(`${chatRoomName.chatRoom}`);
+      // Gets rid of user of chatroom array
+      for (let i = 0; i < usersInChatRoom.length; i++) {
+        if (usersInChatRoom[i].id == socket.id) {
+          usersInChatRoom.splice(i, 1);
+        }
+      }
+      console.log(`Disconnected: %s users connected to chatrooms: ` + usersInChatRoom.length);
 
-  //     // Sends right users in Right in rooms
-  //     io.to(chatRoomName.chatRoom).emit('onlineUsers', {
-  //       users: getUsersInRightChatRooms(chatRoomName.chatRoom),
-  //     });
-  //     // Welcomes User to Room
-  //     io.to(socket.id).emit('welcomeToRoom', `Welcome to room ${chatRoomName.chatRoom}`);
+      chatRooms.splice(chatRooms.indexOf(socket.room), 1);
+      console.log('Disconnected: %s chatRooms connected ' + chatRooms.length);
 
-  //     // Tells other users that new user has joined
-  //     socket.to(`${chatRoomName.chatRoom}`).emit('hasJoinedRoom', `${socket.username} has joined ${chatRoomName.chatRoom}`);
-  //   // }
-  // });
+      // Sends right users in Right in rooms
+      io.to(socket.room).emit('onlineUsers', {
+        users: getUsersInRightChatRooms(socket.room),
+      });
+
+      // User leaves chat
+      io.to(socket.room).emit('leftChat', `${socket.username} has left the room.`);
+
+      socket.room = '';
+      socket.username = '';
+
+    }
+  });
 
   let getUsersInRoom = (chatRoomName, username, id) => {
     let userInRoom = { chatRoomName, username, id, inRoom };
@@ -105,6 +121,10 @@ io.sockets.on('connection', socket => {
 
   let getUsersInRightChatRooms = (chatRoomName) => {
     return usersInChatRoom.filter(user => user.chatRoomName == chatRoomName);
+  };
+
+  let removeUserFromChatRoom = (username) => {
+    return usersInChatRoom.splice(user => user.username == username);
   };
 
 });

@@ -37,10 +37,12 @@ class JoinPage extends Component {
     }
 
     this.socket.emit('newUser', chatRoomInfo);
-    // this.socket.emit('joinChatRoom', chatRoomInfo);
 
     dispatch(clearField());
+  }
 
+  leaveChatRoom() {
+    this.socket.emit('leaveChatRoom');
   }
 
   sendMessage(message) {
@@ -113,6 +115,7 @@ class JoinPage extends Component {
   render() {
     return (
       <div>
+        <button onClick={() => this.leaveChatRoom()}>Leave Room</button>
         <h2>Create Username</h2>
         <input type='text' value={this.props.username} onChange={this.name} placeholder='display-name' autoFocus />
         <h2>Create Chatroom</h2>
