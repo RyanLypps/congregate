@@ -23,3 +23,10 @@ export function clearField() {
     type: 'CLEAR_FIELD',
   }
 }
+
+export function sendSocketToStore(socket) {
+  return {
+    type: 'SEND_SOCKET',
+    payload: socket
+  }
+}

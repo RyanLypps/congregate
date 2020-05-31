@@ -2,6 +2,7 @@ const defaultState = {
   username: '',
   chatRoom: '',
   message: '',
+  socket: '',
 };
 
 export default function joinReducer(state = defaultState, action) {
@@ -35,6 +36,13 @@ export default function joinReducer(state = defaultState, action) {
             message: '',
             chatRoom: '',
             username: '',
+        }
+    }
+
+      case "SEND_SOCKET": {
+        return {
+            ...state,
+            socket: payload
         }
     }
 
