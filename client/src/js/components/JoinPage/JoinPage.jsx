@@ -7,7 +7,8 @@ import {
   getUserName,
   getChatRoom,
   sendMessage,
-  clearField
+  clearField,
+  sendSocketToStore
 } from './joinActions';
 
 let tempMsgArr = [];
@@ -61,6 +62,7 @@ class JoinPage extends Component {
   }
 
   componentDidMount() {
+    this.sendSocket();
 
     this.socket.on('message', data => {
       console.log(data.user + ': ' + data.msg.message);
@@ -96,6 +98,12 @@ class JoinPage extends Component {
 
   }
 
+  sendSocket() {
+    const { dispatch } = this.props;
+
+    dispatch(sendSocketToStore(this.socket));
+  }
+
   name(e) {
     const { dispatch } = this.props;
     const { value } = e.target;
@@ -120,7 +128,10 @@ class JoinPage extends Component {
         <input type='text' value={this.props.username} onChange={this.name} placeholder='display-name' autoFocus />
         <h2>Create Chatroom</h2>
         <input type='text' value={this.props.chatRoom} onChange={this.room} placeholder='chat-room' />
-        <button onClick={() => this.joinChatRoom(this.props.username, this.props.chatRoom)}>Join</button>
+        <form>
+          <Link to ='/messenger'><button>Join Chat</button></Link>
+          <button hidden={true} onClick={(e) => {e.preventDefault(); this.joinChatRoom(this.props.username, this.props.chatRoom)}}>Join</button>
+        </form>
         <hr></hr>
         <div>Online Users</div>
         {this.state.usersArr ? this.state.usersArr.map((user, i) => {
@@ -132,7 +143,7 @@ class JoinPage extends Component {
             </div>
           );
         }) : <div></div>}
-        <form onSubmit={(e) => {e.preventDefault(); this.sendMessage(this.props.message)}}>
+        <form onSubmit={(e) => { e.preventDefault(); this.sendMessage(this.props.message) }}>
           <input ref={(input) => { this.focusMessageInput = input; }} className='message-input' name='message-field' type='text' value={this.props.message} onChange={this.message} maxLength='500'></input>
           <button onClick={() => this.sendMessage(this.props.message)}>Chat</button>
         </form>
@@ -156,6 +167,7 @@ function mapStoreToProps(store) {
     chatRoom: store.joinPage.chatRoom,
     username: store.joinPage.username,
     message: store.joinPage.message,
+    socket: store.joinPage.socket,
   }
 }
 
