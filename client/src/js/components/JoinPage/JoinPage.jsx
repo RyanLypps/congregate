@@ -42,59 +42,58 @@ class JoinPage extends Component {
     dispatch(clearField());
   }
 
-  leaveChatRoom() {
-    this.socket.emit('leaveChatRoom');
-  }
+  // leaveChatRoom() {
+  //   this.socket.emit('leaveChatRoom');
+  // }
 
-  sendMessage(message) {
-    const { dispatch } = this.props;
-    let sendMessage = {
-      message: message
-    }
+  // sendMessage(message) {
+  //   const { dispatch } = this.props;
+  //   let sendMessage = {
+  //     message: message
+  //   }
 
-    this.socket.emit('sendMessage', sendMessage);
-    sendMessage = {};
+  //   this.socket.emit('sendMessage', sendMessage);
+  //   sendMessage = {};
 
-    dispatch(clearField());
+  //   dispatch(clearField());
 
-    this.focusMessageInput.focus();
+  //   this.focusMessageInput.focus();
 
-  }
+  // }
 
   componentDidMount() {
     this.sendSocket();
 
-    this.socket.on('message', data => {
-      console.log(data.user + ': ' + data.msg.message);
+    // this.socket.on('message', data => {
+    //   console.log(data.user + ': ' + data.msg.message);
 
 
-      tempMsgArr.push(data.msg.message);
+    //   tempMsgArr.push(data.msg.message);
 
-      this.setState({
-        messageArr: tempMsgArr
-      });
+    //   this.setState({
+    //     messageArr: tempMsgArr
+    //   });
 
-    });
+    // });
 
-    this.socket.on('welcomeToRoom', data => {
-      console.log(data);
-    });
+    // this.socket.on('welcomeToRoom', data => {
+    //   console.log(data);
+    // });
 
-    this.socket.on('hasJoinedRoom', data => {
-      console.log(data);
-    });
+    // this.socket.on('hasJoinedRoom', data => {
+    //   console.log(data);
+    // });
 
-    this.socket.on('leftChat', data => {
-      console.log(data);
-    });
+    // this.socket.on('leftChat', data => {
+    //   console.log(data);
+    // });
 
-    this.socket.on('onlineUsers', ({ users }) => {
+    // this.socket.on('onlineUsers', ({ users }) => {
 
-      this.setState({
-        usersArr: users.map(user => user.username)
-      });
-    });
-
+    //   this.setState({
+    //     usersArr: users.map(user => user.username)
+    //   });
+    // });
 
   }
 
@@ -130,7 +129,7 @@ class JoinPage extends Component {
         <input type='text' value={this.props.chatRoom} onChange={this.room} placeholder='chat-room' />
         <form>
           <Link to ='/messenger'><button>Join Chat</button></Link>
-          <button hidden={true} onClick={(e) => {e.preventDefault(); this.joinChatRoom(this.props.username, this.props.chatRoom)}}>Join</button>
+          {/* <button hidden={true} onClick={(e) => {e.preventDefault(); this.joinChatRoom(this.props.username, this.props.chatRoom)}}>Join</button> */}
         </form>
         <hr></hr>
         <div>Online Users</div>
