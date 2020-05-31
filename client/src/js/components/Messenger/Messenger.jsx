@@ -1,27 +1,129 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import io from "socket.io-client";
+import { Link } from 'react-router-dom';
+import {
+  sendMessage,
+  clearField,
+} from '../JoinPage/joinActions';
 
- class Messenger extends Component {
+let tempMsgArr = [];
+
+class Messenger extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      messageArr: [],
+      usersArr: [],
+    }
+
+    this.joinChatRoom = this.joinChatRoom.bind(this);
+    this.message = this.message.bind(this);
+
   }
 
-  // getSocket() {
-    
-  // }
+  joinChatRoom(username, chatRoom) {
+    const { dispatch } = this.props;
+    let chatRoomInfo = {
+      username: username,
+      chatRoom: chatRoom
+    }
 
-  // componentDidMount() {
+    this.props.socket.emit('newUser', chatRoomInfo);
 
-  // }
+    dispatch(clearField());
+  }
+
+  leaveChatRoom() {
+    this.props.socket.emit('leaveChatRoom');
+  }
+
+  sendMessage(message) {
+    const { dispatch } = this.props;
+    let sendMessage = {
+      message: message
+    }
+
+    this.props.socket.emit('sendMessage', sendMessage);
+    sendMessage = {};
+
+    dispatch(clearField());
+
+    this.focusMessageInput.focus();
+
+  }
+
+  componentDidMount() {
+    this.joinChatRoom(this.props.username, this.props.chatRoom);
+
+    this.props.socket.on('message', data => {
+
+      console.log(data.user + ': ' + data.msg.message);
+
+      tempMsgArr.push(data.msg.message);
+
+      this.setState({
+        messageArr: tempMsgArr
+      });
+
+    });
+
+    this.props.socket.on('welcomeToRoom', data => {
+      console.log(data);
+    });
+
+    this.props.socket.on('hasJoinedRoom', data => {
+      console.log(data);
+    });
+
+    this.props.socket.on('leftChat', data => {
+      console.log(data);
+    });
+
+    this.props.socket.on('onlineUsers', ({ users }) => {
+
+      this.setState({
+        usersArr: users.map(user => user.username)
+      });
+    });
+
+  }
+
+  message(e) {
+    const { dispatch } = this.props;
+    const { value } = e.target;
+    dispatch(sendMessage(value));
+  }
 
   render() {
-    console.log(this.props.socket);
-    console.log(this.props.chatRoom);
     return (
       <div>
-        <h1>Ryan is Alive</h1>
+        <form action='/'>
+          <button onClick={() => {this.leaveChatRoom() }}>Leave Room</button>
+        </form>
+        <div>Online Users</div>
+        {this.state.usersArr ? this.state.usersArr.map((user, i) => {
+          return (
+            <div key={i}>
+              <h3>
+                {user}
+              </h3>
+            </div>
+          );
+        }) : <div></div>}
+        <form onSubmit={(e) => { e.preventDefault(); this.sendMessage(this.props.message) }}>
+          <input ref={(input) => { this.focusMessageInput = input; }} className='message-input' name='message-field' type='text' value={this.props.message} onChange={this.message} maxLength='500'></input>
+          <button onClick={() => this.sendMessage(this.props.message)}>Chat</button>
+        </form>
+        {this.state.messageArr ? this.state.messageArr.map((message, i) => {
+          return (
+            <div key={i}>
+              <h3>
+                {message}
+              </h3>
+            </div>
+          );
+        }) : <div></div>}
       </div>
     )
   }
@@ -29,10 +131,12 @@ import io from "socket.io-client";
 
 
 function mapStoreToProps(store) {
-  
+
   return {
     chatRoom: store.joinPage.chatRoom,
     socket: store.joinPage.socket,
+    username: store.joinPage.username,
+    message: store.joinPage.message,
   }
 }
 
