@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import {
   sendMessage,
   clearField,
-  getUserName,
-  getChatRoom,
 } from '../JoinPage/joinActions';
 
 let tempMsgArr = [];
@@ -18,8 +17,6 @@ class Messenger extends Component {
       usersArr: [],
     }
 
-    // this.name = this.name.bind(this);
-    // this.room = this.room.bind(this);
     this.joinChatRoom = this.joinChatRoom.bind(this);
     this.message = this.message.bind(this);
 
@@ -85,25 +82,12 @@ class Messenger extends Component {
 
     this.props.socket.on('onlineUsers', ({ users }) => {
 
-      console.log(users);
-
       this.setState({
         usersArr: users.map(user => user.username)
       });
     });
 
   }
-
-  // name(e) {
-  //   const { dispatch } = this.props;
-  //   const { value } = e.target;
-  //   dispatch(getUserName(value));
-  // }
-  // room(e) {
-  //   const { dispatch } = this.props;
-  //   const { value } = e.target;
-    // dispatch(getChatRoom(value));
-  // }
 
   message(e) {
     const { dispatch } = this.props;
@@ -112,9 +96,11 @@ class Messenger extends Component {
   }
 
   render() {
-    console.log(this.props.chatRoom);
     return (
       <div>
+        <form action='/'>
+          <button onClick={() => {this.leaveChatRoom() }}>Leave Room</button>
+        </form>
         <div>Online Users</div>
         {this.state.usersArr ? this.state.usersArr.map((user, i) => {
           return (
