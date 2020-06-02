@@ -89,6 +89,13 @@ class Messenger extends Component {
 
   }
 
+  componentWillUnmount() {
+    if (this.props.socket.id) {
+      console.log('WORKED!');
+      this.props.socket.disconnect();
+    }
+  }
+
   message(e) {
     const { dispatch } = this.props;
     const { value } = e.target;
@@ -99,7 +106,7 @@ class Messenger extends Component {
     return (
       <div>
         <form action='/'>
-          <button onClick={() => {this.leaveChatRoom() }}>Leave Room</button>
+          <button onClick={() => { this.leaveChatRoom() }}>Leave Room</button>
         </form>
         <div>Online Users</div>
         {this.state.usersArr ? this.state.usersArr.map((user, i) => {
