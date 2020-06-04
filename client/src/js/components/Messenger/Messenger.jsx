@@ -5,6 +5,7 @@ import {
   sendMessage,
   clearField,
 } from '../JoinPage/joinActions';
+import axios from 'axios';
 
 let tempMsgArr = [];
 
@@ -43,6 +44,37 @@ class Messenger extends Component {
     let sendMessage = {
       message: message
     }
+
+    // axios.post('messenger', { sendMessage })
+    // .then(res => {
+    //   console.log(res.data);
+    // })
+    
+
+    axios.post('http://localhost:3000/', {
+      firstName: 'Fred',
+      lastName: 'Flintstone'
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+    axios.get('http://localhost:3000/')
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+
+    
+  // axios.get('/api/messenger')
+  // .then(res => console.log(res))
+  // .catch(err => console.log(err));
+
 
     this.props.socket.emit('sendMessage', sendMessage);
     sendMessage = {};
