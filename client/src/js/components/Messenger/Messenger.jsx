@@ -5,6 +5,7 @@ import {
   sendMessage,
   clearField,
 } from '../JoinPage/joinActions';
+import axios from 'axios';
 
 let tempMsgArr = [];
 
@@ -54,6 +55,17 @@ class Messenger extends Component {
   }
 
   componentDidMount() {
+
+        axios.post('/', {
+      message: 'f  u'
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    
     this.joinChatRoom(this.props.username, this.props.chatRoom);
 
     this.props.socket.on('message', data => {

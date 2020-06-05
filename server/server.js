@@ -2,20 +2,30 @@ const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
 const cors = require('cors');
-const index = require('./routes/index');
+const index = require('./routes/chat');
 const path = require('path');
+const bodyParser = require('body-parser');
+const axios = require('axios');
+
+const chatRoutes = require('./routes/chat');
 
 const app = express();
-
+app.use(bodyParser.json());
 app.use(cors());
+
+app.use('/', chatRoutes);
+
 app.use(express.static('dist'));
 app.use(index);
 
 const server = http.createServer(app);
 const io = socketIO(server);
 
+
 app.get('/messenger', (req, res) => {
+
   res.sendFile(path.join(__dirname, '../dist/index.html'));
+  
 });
 
 let users = [];
