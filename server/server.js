@@ -23,14 +23,9 @@ const io = socketIO(server);
 
 
 app.get('/messenger', (req, res) => {
+
   res.sendFile(path.join(__dirname, '../dist/index.html'));
-
-  axios.get('/messenger')
-  .then(res => console.log(res))
-  .catch(err => console.log(err));
-
-  // console.log(res);
-
+  
 });
 
 let users = [];

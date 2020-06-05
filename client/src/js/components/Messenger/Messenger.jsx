@@ -45,37 +45,6 @@ class Messenger extends Component {
       message: message
     }
 
-    // axios.post('messenger', { sendMessage })
-    // .then(res => {
-    //   console.log(res.data);
-    // })
-    
-
-    axios.post('http://localhost:3000/', {
-      firstName: 'Fred',
-      lastName: 'Flintstone'
-    })
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-
-    axios.get('http://localhost:3000/')
-  .then(function (response) {
-    console.log(response);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-
-    
-  // axios.get('/api/messenger')
-  // .then(res => console.log(res))
-  // .catch(err => console.log(err));
-
-
     this.props.socket.emit('sendMessage', sendMessage);
     sendMessage = {};
 
@@ -86,6 +55,17 @@ class Messenger extends Component {
   }
 
   componentDidMount() {
+
+        axios.post('/', {
+      message: 'f  u'
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    
     this.joinChatRoom(this.props.username, this.props.chatRoom);
 
     this.props.socket.on('message', data => {

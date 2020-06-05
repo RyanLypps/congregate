@@ -7,6 +7,7 @@ router.get("/", (req, res) => {
 
   mysqlConnection.query('SELECT * from chat.chatroom_history', (err, rows, fields) => {
 
+
     res.sendFile(path.join(__dirname, '../../dist/index.html'));
 
     if(!err) {
@@ -17,6 +18,15 @@ router.get("/", (req, res) => {
       console.log(err);
     }
   })
+
+});
+
+router.post("/", (req, res) => {
+
+  let ok ={
+    message: 'ok'
+  }
+  res.send(ok)
 
 });
 
