@@ -4,9 +4,9 @@ let mysqlConnection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'Pepper181',
-  database: 'chat',
+  database: 'chatDB',
   multipleStatements: true,
-  // port: 3306
+  port: 3306
 });
 
 mysqlConnection.connect((err) => {
