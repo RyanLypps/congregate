@@ -45,8 +45,22 @@ class Messenger extends Component {
       message: message
     }
 
-    this.props.socket.emit('sendMessage', sendMessage);
-    sendMessage = {};
+    if(sendMessage.message.length != 0) {
+
+      this.props.socket.emit('sendMessage', sendMessage);
+      
+      axios.post('/', {
+        message: sendMessage
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+      
+      sendMessage = {};
+    }
 
     dispatch(clearField());
 
@@ -55,16 +69,6 @@ class Messenger extends Component {
   }
 
   componentDidMount() {
-
-        axios.post('/', {
-      message: 'f  u'
-    })
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
     
     this.joinChatRoom(this.props.username, this.props.chatRoom);
 
