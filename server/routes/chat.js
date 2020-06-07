@@ -21,7 +21,10 @@ router.get("/", (req, res) => {
   //   }
   // });
 
-  // mysqlConnection.query('CREATE TABLE customers (name VARCHAR(255), address VARCHAR(255))', (err, rows, fields) => {
+
+  // id text person timestamp chatroom 
+
+  // mysqlConnection.query('CREATE TABLE messages (id INT AUTO_INCREMENT PRIMARY KEY, text VARCHAR(300), person VARCHAR(20), timestamp TIMESTAMP, chatroom VARCHAR(30))', (err, rows, fields) => {
 
   //   if(!err) {
   //     {
@@ -47,7 +50,21 @@ router.get("/", (req, res) => {
   //   }
   // });
 
-  // mysqlConnection.query("INSERT INTO customers (name, address) VALUES ('Company Inc', 'Highway 37')", (err, rows, fields) => {
+  // mysqlConnection.query("INSERT INTO messages (text, person, timestamp, chatroom) VALUES ('How are you?', 'BigBoyTim', '2020-06-06 12:00:00', 'Ghosties')", (err, rows, fields) => {
+
+  //   if(!err) {
+  //     {
+  //       console.log(rows);
+  //       console.log(fields);
+  //       console.log('result inserted!'); 
+  //     }
+  //   } else {
+  //     throw err;
+  //   }
+
+  // });
+
+  // mysqlConnection.query("DROP TABLE customers", (err, rows, fields) => {
 
   //   if(!err) {
   //     {
@@ -65,13 +82,15 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
 
-  console.log('why run twice?');
-
   let messageFromChatRoom = req.body.message.message;
+  let chatroomName = req.body.message.chatroom;
+  let UserThatSentMsg = req.body.message.username;
 
-  if (messageFromChatRoom.length != 0) {
+  // console.log(req.body);
 
-    mysqlConnection.query(`INSERT INTO customers (name, address) VALUES ('${messageFromChatRoom}', 'Highway 37')`, (err, rows, fields) => {
+  // if (messageFromChatRoom.length != 0) {
+
+    mysqlConnection.query(`INSERT INTO messages (text, person, timestamp, chatroom) VALUES ('${messageFromChatRoom}', '${UserThatSentMsg}', '2020-06-06 12:00:00', '${chatroomName}')`, (err, rows, fields) => {
 
       if (!err) {
         {
@@ -84,7 +103,8 @@ router.post("/", (req, res) => {
       }
 
     });
-  }
+
+  // }
 
 });
 
