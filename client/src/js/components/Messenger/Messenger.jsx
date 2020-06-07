@@ -24,7 +24,7 @@ class Messenger extends Component {
   }
 
   joinChatRoom(username, chatRoom) {
-    const { dispatch } = this.props;
+
     let chatRoomInfo = {
       username: username,
       chatRoom: chatRoom
@@ -32,17 +32,19 @@ class Messenger extends Component {
 
     this.props.socket.emit('newUser', chatRoomInfo);
 
-    dispatch(clearField());
   }
 
   leaveChatRoom() {
     this.props.socket.emit('leaveChatRoom');
   }
 
-  sendMessage(message) {
+  sendMessage(message, chatroom, username) {
     const { dispatch } = this.props;
+
     let sendMessage = {
-      message: message
+      message: message,
+      chatroom: chatroom,
+      username: username
     }
 
     if(sendMessage.message.length != 0) {
@@ -107,7 +109,6 @@ class Messenger extends Component {
 
   componentWillUnmount() {
     if (this.props.socket.id) {
-      console.log('WORKED!');
       this.props.socket.disconnect();
     }
   }
@@ -134,9 +135,9 @@ class Messenger extends Component {
             </div>
           );
         }) : <div></div>}
-        <form onSubmit={(e) => { e.preventDefault(); this.sendMessage(this.props.message) }}>
+        <form onSubmit={(e) => { e.preventDefault(); this.sendMessage(this.props.message, this.props.chatRoom, this.props.username) }}>
           <input ref={(input) => { this.focusMessageInput = input; }} className='message-input' name='message-field' type='text' value={this.props.message} onChange={this.message} maxLength='500'></input>
-          <button onClick={() => this.sendMessage(this.props.message)}>Chat</button>
+          <button onClick={() => this.sendMessage(this.props.message, this.props.chatRoom, this.props.username)}>Chat</button>
         </form>
         {this.state.messageArr ? this.state.messageArr.map((message, i) => {
           return (

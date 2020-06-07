@@ -5,7 +5,7 @@ const cors = require('cors');
 const index = require('./routes/chat');
 const path = require('path');
 const bodyParser = require('body-parser');
-const axios = require('axios');
+const mysqlConnection = require('./connection/connection');
 
 const chatRoutes = require('./routes/chat');
 

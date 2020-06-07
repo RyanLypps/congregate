@@ -34,8 +34,6 @@ export default function joinReducer(state = defaultState, action) {
         return {
             ...state,
             message: '',
-            chatRoom: '',
-            username: '',
         }
     }
 

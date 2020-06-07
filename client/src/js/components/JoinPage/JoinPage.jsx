@@ -50,9 +50,7 @@ class JoinPage extends Component {
         <input type='text' value={this.props.username} onChange={this.name} placeholder='display-name' autoFocus />
         <h2>Create Chatroom</h2>
         <input type='text' value={this.props.chatRoom} onChange={this.room} placeholder='chat-room' />
-        <form>
           <Link to ='/messenger'><button>Join Chat</button></Link>
-        </form>
       </div>
     )
   }
