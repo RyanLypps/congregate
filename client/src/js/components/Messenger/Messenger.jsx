@@ -8,6 +8,7 @@ import {
 import axios from 'axios';
 
 let tempMsgArr = [];
+let runStatement = false;
 
 class Messenger extends Component {
   constructor(props) {
@@ -47,21 +48,17 @@ class Messenger extends Component {
       username: username
     }
 
-    if(sendMessage.message.length != 0) {
+    if (sendMessage.message.length != 0) {
 
-      this.props.socket.emit('sendMessage', sendMessage);
-      
+
       axios.post('/', {
         message: sendMessage
-      })
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
       });
-      
+
+      this.props.socket.emit('sendMessage', sendMessage);
+
       sendMessage = {};
+
     }
 
     dispatch(clearField());
@@ -71,10 +68,14 @@ class Messenger extends Component {
   }
 
   componentDidMount() {
-    
+
     this.joinChatRoom(this.props.username, this.props.chatRoom);
 
     this.props.socket.on('message', data => {
+
+      axios.get('/info')
+      .then(res => console.log(res))
+      .catch(err => console.log(err));
 
       console.log(data.user + ': ' + data.msg.message);
 
@@ -83,6 +84,8 @@ class Messenger extends Component {
       this.setState({
         messageArr: tempMsgArr
       });
+
+    
 
     });
 

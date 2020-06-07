@@ -67,6 +67,7 @@ io.sockets.on('connection', socket => {
 
   // Send Message
   socket.on('sendMessage', message => {
+
     io.to(`${socket.room}`).emit('message', { msg: message, user: socket.username });
   });
 
