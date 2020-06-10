@@ -69,24 +69,33 @@ class Messenger extends Component {
 
   componentDidMount() {
 
+    axios.get('/info')
+      .then(res => {
+        this.props.socket.emit('displayRightChatHistory', res.data);
+      })
+      .catch(err => console.log(err));
+
+      this.props.socket.on('rightChatHistory', chatHistory => {
+        this.setState({
+          messageArr: chatHistory.chatHistory
+        });
+      });
+
     this.joinChatRoom(this.props.username, this.props.chatRoom);
 
     this.props.socket.on('message', data => {
 
       axios.get('/info')
-      .then(res => console.log(res))
+      .then(res => {
+        this.props.socket.emit('displayRightChatHistory', res.data);
+      })
       .catch(err => console.log(err));
 
-      console.log(data.user + ': ' + data.msg.message);
-
-      tempMsgArr.push(data.msg.message);
-
-      this.setState({
-        messageArr: tempMsgArr
+      this.props.socket.on('rightChatHistory', chatHistory => {
+        this.setState({
+          messageArr: chatHistory.chatHistory
+        });
       });
-
-    
-
     });
 
     this.props.socket.on('welcomeToRoom', data => {
@@ -146,7 +155,8 @@ class Messenger extends Component {
           return (
             <div key={i}>
               <h3>
-                {message}
+                {message.person}:
+                <span> {message.text}</span>
               </h3>
             </div>
           );

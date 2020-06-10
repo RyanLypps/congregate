@@ -83,11 +83,11 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
 
-  let messageFromChatRoom = req.body.message.message;
-  let chatroomName = req.body.message.chatroom;
-  let UserThatSentMsg = req.body.message.username;
+  let messageFromChatRoom = req.body.message.message.replace(/'/g, "");
+  let chatroomName = req.body.message.chatroom.replace(/\'\'?/g, "''");
+  let UserThatSentMsg = req.body.message.username.replace(/\'\'?/g, "''");
 
-    mysqlConnection.query(`INSERT INTO messages (text, person, timestamp, chatroom) VALUES ('${messageFromChatRoom}', '${UserThatSentMsg}', '${moment().format()}', '${chatroomName}')`, (err, rows, fields) => {
+    mysqlConnection.query(`INSERT INTO messages (text, person, timestamp, chatroom) VALUES ('${messageFromChatRoom}', '${UserThatSentMsg}', '${moment().format()}', '${chatroomName.toLowerCase()}')`, (err, rows, fields) => {
 
       if (!err) {
         {
@@ -103,12 +103,11 @@ router.post("/", (req, res) => {
   
   router.get("/info", (req, res) => {
 
-    mysqlConnection.query(`SELECT text FROM messages`, (err, rows, fields) => {
+    mysqlConnection.query(`SELECT * FROM messages`, (err, rows, fields) => {
 
       if (!err) {
         {
           res.send(rows)
-          console.log('selected right text!');
         }
       } else {
         throw err;

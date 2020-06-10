@@ -71,31 +71,39 @@ io.sockets.on('connection', socket => {
     io.to(`${socket.room}`).emit('message', { msg: message, user: socket.username });
   });
 
+  // Display Right Chat History for Right Room
+  socket.on('displayRightChatHistory', allOfChat => {
+
+   let rightChat = allOfChat.filter(personMsg => personMsg.chatroom == socket.room);
+
+    io.to(`${socket.room}`).emit('rightChatHistory', { chatHistory: rightChat, user: socket.username });
+  });
+
   // New User
   socket.on('newUser', chatRoomInfo => {
 
     if (usersInChatRoom.filter(users => users.id == socket.id).length == 0) {
 
-      getUsersInRoom(chatRoomInfo.chatRoom, chatRoomInfo.username, socket.id);
+      getUsersInRoom(chatRoomInfo.chatRoom.toLowerCase(), chatRoomInfo.username, socket.id);
 
       socket.username = chatRoomInfo.username;
       users.push(socket.username);
       console.log('Connected: %s users connected ' + users.length);
 
-      socket.room = chatRoomInfo.chatRoom;
+      socket.room = chatRoomInfo.chatRoom.toLowerCase();
       chatRooms.push(socket.room);
-      console.log(`Connected to room ${chatRoomInfo.chatRoom}.` + ' ' + 'Amt of People in chatrooms: ' + chatRooms.length);
-      socket.join(`${chatRoomInfo.chatRoom}`);
+      console.log(`Connected to room ${chatRoomInfo.chatRoom.toLowerCase()}.` + ' ' + 'Amt of People in chatrooms: ' + chatRooms.length);
+      socket.join(`${chatRoomInfo.chatRoom.toLowerCase()}`);
 
       // Sends right users in Right in rooms
-      io.to(chatRoomInfo.chatRoom).emit('onlineUsers', {
-        users: getUsersInRightChatRooms(chatRoomInfo.chatRoom),
+      io.to(chatRoomInfo.chatRoom.toLowerCase()).emit('onlineUsers', {
+        users: getUsersInRightChatRooms(chatRoomInfo.chatRoom.toLowerCase()),
       });
       // Welcomes User to Room
-      io.to(socket.id).emit('welcomeToRoom', `Welcome to room ${chatRoomInfo.chatRoom}`);
+      io.to(socket.id).emit('welcomeToRoom', `Welcome to room ${chatRoomInfo.chatRoom.toLowerCase()}`);
 
       // Tells other users that new user has joined
-      socket.to(`${chatRoomInfo.chatRoom}`).emit('hasJoinedRoom', `${socket.username} has joined ${chatRoomInfo.chatRoom}`);
+      socket.to(`${chatRoomInfo.chatRoom.toLowerCase()}`).emit('hasJoinedRoom', `${socket.username} has joined ${chatRoomInfo.chatRoom.toLowerCase()}`);
     }
   });
 
